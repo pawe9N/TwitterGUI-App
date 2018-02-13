@@ -1,3 +1,3 @@
 venv/
 sample/__pycache__/
-sample/keys_object.py
+sample/keys_class.py

@@ -1,6 +1,6 @@
 class Keys:
 	def __init__(self):
-		self.consumer_key = "vov1TLE0E4BH67Liwe2Ucv9wa"
-		self.consumer_secret = "fcY4r328UqbGZFsi9uAZHKdRwWv4RBGdm2SEFSs6QHOuRk4jPd"
-		self.access_token = "959911508573589505-RJWDy1tZDE0HBygvWrXcHuxfqmjYZH7"
-		self.access_secret = "THZVU2h64zdQ1rzi3cbhH3iH633w6GP7s0l4w903YPmEH"
+		self.consumer_key = "9wzSDDaWdqbsmk9qXxLvdTziG"
+		self.consumer_secret = "GWBB9LY7JWXlxV0YxbmSe7ykW6R6YObojsdupw3etY1aLGodj2"
+		self.access_token = "959911508573589505-ZpUHYnkP3VKpE5Ew12mqmwoQWvTYBEt"
+		self.access_secret = "TxupLoPjBefN0v2u6JHa52tLpa7H9yQjUnnAWZNkZWa83"

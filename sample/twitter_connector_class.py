@@ -25,10 +25,3 @@ class Twitter_Connector():
 
 	def post_status_message(self, status_message):
 		return self.api.PostUpdate(status_message)
-
-	
-
-Tconnector = Twitter_Connector()
-
-print(Tconnector.get_credentials())
-print(Tconnector.get_friends())
