@@ -9,7 +9,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setFixedSize(1140, 870)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("twitter icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("images\\twitter icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
 
         self.mainWIdget = QtWidgets.QWidget(MainWindow)
@@ -26,8 +26,8 @@ class Ui_MainWindow(object):
         self.awatarLabel = QtWidgets.QLabel(self.profileInfoWidget)
         self.awatarLabel.setMinimumSize(QtCore.QSize(150, 150))
         self.awatarLabel.setMaximumSize(QtCore.QSize(150, 150))
-        self.awatarLabel.setStyleSheet("border: 1px solid black; background-color: white;")
-        self.awatarLabel.setPixmap(QtGui.QPixmap("twitter icon.png"))
+        self.awatarLabel.setStyleSheet("background-color: white;")
+        self.awatarLabel.setPixmap(QtGui.QPixmap("images\\twitter icon.png"))
         self.awatarLabel.setScaledContents(True)
         self.verticalLayout.addWidget(self.awatarLabel, 0, QtCore.Qt.AlignHCenter)
 
@@ -54,6 +54,7 @@ class Ui_MainWindow(object):
         self.descriptionLabel.setFont(font)
         self.descriptionLabel.setTextFormat(QtCore.Qt.RichText)
         self.descriptionLabel.setWordWrap(True)
+        self.descriptionLabel.setMinimumWidth(250)
         self.verticalLayout.addWidget(self.descriptionLabel)
 
         self.locationLabel = QtWidgets.QLabel(self.profileInfoWidget)
@@ -111,7 +112,7 @@ class Ui_MainWindow(object):
         self.logoVBoxLayout.setContentsMargins(0, 0, 0, 0)
 
         self.logoLabel = QtWidgets.QLabel(self.logoWidget)
-        self.logoLabel.setPixmap(QtGui.QPixmap("banner.png"))
+        self.logoLabel.setPixmap(QtGui.QPixmap("images\\banner.png"))
         self.logoLabel.setScaledContents(False)
         self.logoLabel.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -240,16 +241,16 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         self.backButton.setFont(font)
         self.backButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.backButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold;border-top-right-radius: 10px; border-top-left-radius: 10px;} QPushButton:hover {background-color: white;color:#1dcaff;}")
+        self.backButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold;border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;} :disabled {background-color: gray; text-decoration: line-through;}")
         self.navigationHBoxLayout.addWidget(self.backButton)
 
-        self.newxtButton = QtWidgets.QPushButton(self.navigationWidget)
+        self.nextButton = QtWidgets.QPushButton(self.navigationWidget)
         font = QtGui.QFont()
         font.setPointSize(16)
-        self.newxtButton.setFont(font)
-        self.newxtButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.newxtButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px;} QPushButton:hover {background-color: white;color:#1dcaff;}")
-        self.navigationHBoxLayout.addWidget(self.newxtButton)
+        self.nextButton.setFont(font)
+        self.nextButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.nextButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;} :disabled {background-color: gray; text-decoration: line-through;}")
+        self.navigationHBoxLayout.addWidget(self.nextButton)
 
         self.navigationVBoxLayout.addLayout(self.navigationHBoxLayout)
         self.dataVBoxLayout.addWidget(self.navigationWidget)
@@ -338,7 +339,7 @@ class Ui_MainWindow(object):
         self.videosNumberLabel.setText(_translate("MainWindow", "0"))
         self.dataThemeLabel.setText(_translate("MainWindow", "Tweets"))
         self.backButton.setText(_translate("MainWindow", "Back"))
-        self.newxtButton.setText(_translate("MainWindow", "Next"))
+        self.nextButton.setText(_translate("MainWindow", "Next"))
         self.dataBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

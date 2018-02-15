@@ -8,20 +8,32 @@ class Twitter_Connector():
 				consumer_secret=self.keys.consumer_secret,
 				access_token_key=self.keys.access_token,
 				access_token_secret=self.keys.access_secret)
-	def get_credentials(self):
-		return self.api.VerifyCredentials()
+
+		self.credentials = self.api.VerifyCredentials()
 
 	def get_user_name(self):
-		return self.api.VerifyCredentials().name
+		return self.credentials.name
 
 	def get_user_image_url(self):
-		return self.api.VerifyCredentials().profile_image_url
+		return self.credentials.profile_image_url
 
 	def get_user_screen_name(self):
-		return self.api.VerifyCredentials().screen_name
+		return self.credentials.screen_name
+
+	def get_user_description(self):
+		return self.credentials.description
+
+	def get_user_location(self):
+		return self.credentials.location
+
+	def get_user_website(self):
+		return self.credentials.url
 
 	def get_friends(self):
 		return self.api.GetFriends()
 
 	def post_status_message(self, status_message):
 		return self.api.PostUpdate(status_message)
+
+	def get_tweets(self):
+		return self.api.GetHomeTimeline()
