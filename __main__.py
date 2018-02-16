@@ -7,6 +7,7 @@ from twitterGUI import Ui_MainWindow
 import urllib
 import requests
 import time
+import os.path
 
 
 def main():
@@ -37,12 +38,18 @@ def main():
 	ex.websiteLabel.setText("Website: {}".format(Tconnector.get_user_website()))
 	#setting tweets
 	tweets = Tconnector.get_tweets()
-	html = "<!DOCTYPE HTML><html><head><style>span{text-align: center;}</style></head><body><hr>"
+	html = "<!DOCTYPE HTML><html><head><style>span{text-align: center; width:30px;}</style></head><body><hr>"
 	for item in tweets:
-		date = date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
+		date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
 		text = item.text
-		html += "<span>Date: {} <span><br><b>Text: {}</b><hr>".format(date,text)
-
+		if item.media is not None:
+			image = item.media[0].media_url
+			print(item.media[0].media_url[27:])
+			if not (os.path.exists("images/{}.png".format(image[27:]))):
+				urllib.request.urlretrieve(image, "images/{}.png".format(image[27:]))
+			html += "<span>Date: {} <span><br><b>Text: {}</b></span> <img src='images/{}.png'><hr>".format(date,text,image[27:])
+		else:
+			html += "<span>Date: {} </span><br><b>Text: {}</b><hr>".format(date,text)
 	html += "</body></html>"
 	ex.dataBrowser.setHtml(html)
 	#setting buttons

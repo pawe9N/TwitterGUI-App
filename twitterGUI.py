@@ -1,5 +1,10 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+import urllib
+import requests
+from PIL import Image
+from io import BytesIO
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
