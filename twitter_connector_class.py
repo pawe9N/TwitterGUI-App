@@ -1,5 +1,12 @@
 import twitter
 from keys_class import Keys
+import urllib
+import requests
+import time
+import os.path
+import re
+import pprint
+
 
 class Twitter_Connector():
 	def __init__(self):
@@ -30,10 +37,25 @@ class Twitter_Connector():
 		return self.credentials.url
 
 	def get_friends(self):
-		return self.api.GetFriends()
+		return self.api.GetFriends(screen_name = self.get_user_screen_name())
 
 	def post_status_message(self, status_message):
 		return self.api.PostUpdate(status_message)
 
 	def get_tweets(self):
 		return self.api.GetHomeTimeline()
+
+	def get_favourites(self):
+		return self.api.GetFavorites()
+
+	def get_my_timeline(self):
+		return self.api.GetUserTimeline(screen_name = self.get_user_screen_name())
+"""
+def main():
+	Tconnector = Twitter_Connector()
+	statuses = Tconnector.get_friends()
+	for item in statuses:
+		print(item.profile_image_url.split("/")[5])
+if __name__ == "__main__":
+	main()
+"""

@@ -2,22 +2,23 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 import urllib
 import requests
-from PIL import Image
-from io import BytesIO
+import time
+import re
+import os.path
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
 
     	################################## Main Window ######################################################
-
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(1140, 870)
+        self.MainWindow = MainWindow
+        self.MainWindow .setObjectName("MainWindow")
+        self.MainWindow .setFixedSize(1140, 870)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("images\\twitter icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
+        self.MainWindow .setWindowIcon(icon)
 
-        self.mainWIdget = QtWidgets.QWidget(MainWindow)
+        self.mainWIdget = QtWidgets.QWidget(self.MainWindow )
         self.mainWIdget.setStyleSheet("background: qlineargradient(spread:pad, x1:1, y1:1, x2:0.988636, y2:0.08, stop:0 rgba(0, 199, 255, 137), stop:1 rgba(255, 255, 255, 255));")
 
         #################################  Profile Info   #####################################################
@@ -147,12 +148,12 @@ class Ui_MainWindow(object):
         self.tweetsNumberLabel.setStyleSheet("color: #0084b4; background: white")
         self.infoTableGridLayout.addWidget(self.tweetsNumberLabel, 1, 0, 1, 1, QtCore.Qt.AlignHCenter)
 
-        self.videosLabel = QtWidgets.QLabel(self.infoTableWidget)
+        self.messagesLabel = QtWidgets.QLabel(self.infoTableWidget)
         font = QtGui.QFont()
         font.setPointSize(11)
-        self.videosLabel.setFont(font)
-        self.videosLabel.setStyleSheet("color: #0084b4; background: white")
-        self.infoTableGridLayout.addWidget(self.videosLabel, 0, 2, 1, 1, QtCore.Qt.AlignHCenter)
+        self.messagesLabel.setFont(font)
+        self.messagesLabel.setStyleSheet("color: #0084b4; background: white")
+        self.infoTableGridLayout.addWidget(self.messagesLabel, 0, 2, 1, 1, QtCore.Qt.AlignHCenter)
 
         self.followingLabel = QtWidgets.QLabel(self.infoTableWidget)
         font = QtGui.QFont()
@@ -211,12 +212,12 @@ class Ui_MainWindow(object):
         self.photosLabel.setStyleSheet("color: #0084b4; background: white")
         self.infoTableGridLayout.addWidget(self.photosLabel, 0, 1, 1, 1, QtCore.Qt.AlignHCenter)
 
-        self.videosNumberLabel = QtWidgets.QLabel(self.infoTableWidget)
+        self.messagesNumberLabel = QtWidgets.QLabel(self.infoTableWidget)
         font = QtGui.QFont()
         font.setPointSize(11)
-        self.videosNumberLabel.setFont(font)
-        self.videosNumberLabel.setStyleSheet("color: #0084b4; background: white")
-        self.infoTableGridLayout.addWidget(self.videosNumberLabel, 1, 2, 1, 1, QtCore.Qt.AlignHCenter)
+        self.messagesNumberLabel.setFont(font)
+        self.messagesNumberLabel.setStyleSheet("color: #0084b4; background: white")
+        self.infoTableGridLayout.addWidget(self.messagesNumberLabel, 1, 2, 1, 1, QtCore.Qt.AlignHCenter)
 
         ############################## showing data widget #################################################
 
@@ -314,10 +315,10 @@ class Ui_MainWindow(object):
 
         ############################ MainWindow and data ###################################################################################
 
-        MainWindow.setCentralWidget(self.mainWIdget)
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        MainWindow.show()
+        self.MainWindow .setCentralWidget(self.mainWIdget)
+        self.retranslateUi(self.MainWindow )
+        QtCore.QMetaObject.connectSlotsByName(self.MainWindow )
+        self.MainWindow .show()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -332,7 +333,7 @@ class Ui_MainWindow(object):
         self.postingNewTweetButton.setText(_translate("MainWindow", "Post"))
         self.followingNumberLabel.setText(_translate("MainWindow", "0"))
         self.tweetsNumberLabel.setText(_translate("MainWindow", "0"))
-        self.videosLabel.setText(_translate("MainWindow", "Videos"))
+        self.messagesLabel.setText(_translate("MainWindow", "Messages"))
         self.followingLabel.setText(_translate("MainWindow", "Folowing"))
         self.photosNumberLabel.setText(_translate("MainWindow", "0"))
         self.tweetsLabel.setText(_translate("MainWindow", "Tweets"))
@@ -341,7 +342,7 @@ class Ui_MainWindow(object):
         self.favouritesNumberLabel.setText(_translate("MainWindow", "0"))
         self.followersNumberLabel.setText(_translate("MainWindow", "0"))
         self.photosLabel.setText(_translate("MainWindow", "Photos"))
-        self.videosNumberLabel.setText(_translate("MainWindow", "0"))
+        self.messagesNumberLabel.setText(_translate("MainWindow", "0"))
         self.dataThemeLabel.setText(_translate("MainWindow", "Tweets"))
         self.backButton.setText(_translate("MainWindow", "Back"))
         self.nextButton.setText(_translate("MainWindow", "Next"))
@@ -353,6 +354,45 @@ class Ui_MainWindow(object):
         self.sendAMessageLabel.setText(_translate("MainWindow", "Send a message to:"))
         self.messageLabel.setText(_translate("MainWindow", "Message:"))
         self.sendingMessageButton.setText(_translate("MainWindow", "Send"))
+
+
+    def buttonClicked(self, htmlTweets=None, 
+                            htmlPhoto = None, 
+                            htmlFavourites=None,
+                            htmlFollowing=None):
+        sender = self.MainWindow.sender()
+        if sender.text() == "Photos":
+            self.dataBrowser.setHtml(htmlPhoto)
+            self.backButton.setEnabled(True)
+            self.backButton.setText("Tweets")
+            self.nextButton.setText("Messages")
+        elif sender.text() == "Tweets":
+            self.dataBrowser.setHtml(htmlTweets)
+            self.backButton.setEnabled(False)
+            self.backButton.setText("")
+            self.nextButton.setText("Photos")
+        elif sender.text() == "Messages":
+            self.dataBrowser.setHtml("<body>Lorem ipsum</body>")
+            self.backButton.setText("Photos")
+            self.nextButton.setText("Following")
+            pass
+        elif sender.text() == "Following":
+            self.dataBrowser.setHtml(htmlFollowing)
+            self.backButton.setText("Messages")
+            self.nextButton.setText("Followers")
+            pass
+        elif sender.text() == "Followers":
+            self.dataBrowser.setHtml("<body>Lorem ipsum</body>")
+            self.backButton.setText("Following")
+            self.nextButton.setEnabled(True)
+            self.nextButton.setText("Favourites")
+            pass
+        elif sender.text() == "Favourites":
+            self.dataBrowser.setHtml(htmlFavourites)
+            self.backButton.setText("Followers")
+            self.nextButton.setEnabled(False)
+            self.nextButton.setText("")
+            pass
 
 """
 app = QtWidgets.QApplication(sys.argv)
