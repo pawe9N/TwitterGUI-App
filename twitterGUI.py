@@ -19,13 +19,14 @@ class Ui_MainWindow(object):
         self.MainWindow .setWindowIcon(icon)
 
         self.mainWIdget = QtWidgets.QWidget(self.MainWindow )
-        self.mainWIdget.setStyleSheet("background: qlineargradient(spread:pad, x1:1, y1:1, x2:0.988636, y2:0.08, stop:0 rgba(0, 199, 255, 137), stop:1 rgba(255, 255, 255, 255));")
+        self.mainWIdget.setStyleSheet("background: black;")
+        ## ("background: qlineargradient(spread:pad, x1:1, y1:1, x2:0.988636, y2:0.08, stop:0 rgba(0, 199, 255, 137), stop:1 rgba(255, 255, 255, 255));
 
         #################################  Profile Info   #####################################################
 
         self.profileInfoWidget = QtWidgets.QWidget(self.mainWIdget)
         self.profileInfoWidget.setGeometry(QtCore.QRect(40, 190, 500, 500))
-        self.profileInfoWidget.setStyleSheet("background: white; border-radius: 30px; padding: 2px 5px;")
+        self.profileInfoWidget.setStyleSheet("background: white; border-radius: 30px; padding: 2px 5px;color: #1dcaff;")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.profileInfoWidget)
         self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
 
@@ -247,7 +248,7 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         self.backButton.setFont(font)
         self.backButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.backButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold;border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;} :disabled {background-color: gray; text-decoration: line-through;}")
+        self.backButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold;border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;}")
         self.navigationHBoxLayout.addWidget(self.backButton)
 
         self.nextButton = QtWidgets.QPushButton(self.navigationWidget)
@@ -255,7 +256,7 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         self.nextButton.setFont(font)
         self.nextButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.nextButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;} :disabled {background-color: gray; text-decoration: line-through;}")
+        self.nextButton.setStyleSheet("QPushButton {background-color:#55acee; color: white; font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;}")
         self.navigationHBoxLayout.addWidget(self.nextButton)
 
         self.navigationVBoxLayout.addLayout(self.navigationHBoxLayout)
@@ -355,44 +356,6 @@ class Ui_MainWindow(object):
         self.messageLabel.setText(_translate("MainWindow", "Message:"))
         self.sendingMessageButton.setText(_translate("MainWindow", "Send"))
 
-
-    def buttonClicked(self, htmlTweets=None, 
-                            htmlPhoto = None, 
-                            htmlFavourites=None,
-                            htmlFollowing=None):
-        sender = self.MainWindow.sender()
-        if sender.text() == "Photos":
-            self.dataBrowser.setHtml(htmlPhoto)
-            self.backButton.setEnabled(True)
-            self.backButton.setText("Tweets")
-            self.nextButton.setText("Messages")
-        elif sender.text() == "Tweets":
-            self.dataBrowser.setHtml(htmlTweets)
-            self.backButton.setEnabled(False)
-            self.backButton.setText("")
-            self.nextButton.setText("Photos")
-        elif sender.text() == "Messages":
-            self.dataBrowser.setHtml("<body>Lorem ipsum</body>")
-            self.backButton.setText("Photos")
-            self.nextButton.setText("Following")
-            pass
-        elif sender.text() == "Following":
-            self.dataBrowser.setHtml(htmlFollowing)
-            self.backButton.setText("Messages")
-            self.nextButton.setText("Followers")
-            pass
-        elif sender.text() == "Followers":
-            self.dataBrowser.setHtml("<body>Lorem ipsum</body>")
-            self.backButton.setText("Following")
-            self.nextButton.setEnabled(True)
-            self.nextButton.setText("Favourites")
-            pass
-        elif sender.text() == "Favourites":
-            self.dataBrowser.setHtml(htmlFavourites)
-            self.backButton.setText("Followers")
-            self.nextButton.setEnabled(False)
-            self.nextButton.setText("")
-            pass
 
 """
 app = QtWidgets.QApplication(sys.argv)

@@ -39,8 +39,8 @@ class Twitter_Connector():
 	def get_friends(self):
 		return self.api.GetFriends(screen_name = self.get_user_screen_name())
 
-	def post_status_message(self, status_message):
-		return self.api.PostUpdate(status_message)
+	def post_status_message(self, tweet):
+		return self.api.PostUpdate(tweet)
 
 	def get_tweets(self):
 		return self.api.GetHomeTimeline()
@@ -50,6 +50,7 @@ class Twitter_Connector():
 
 	def get_my_timeline(self):
 		return self.api.GetUserTimeline(screen_name = self.get_user_screen_name())
+
 """
 def main():
 	Tconnector = Twitter_Connector()
