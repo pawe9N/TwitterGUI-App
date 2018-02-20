@@ -41,41 +41,45 @@ class TwitterGUI_APP():
 		self.ex.descriptionLabel.setText("Description: {}".format(description))
 
 		#setting location
-		self.ex.locationLabel.setText("Location: {}".format(self.Tconnector.get_user_location()))
+		self.ex.locationLabel.setText("\nLocation: {}".format(self.Tconnector.get_user_location()))
 		#setting website
 		self.ex.websiteLabel.setText("Website: {}".format(self.Tconnector.get_user_website()))
+
 		#setting tweets
 		tweets = self.Tconnector.get_tweets()
-		photos = self.Tconnector.get_my_timeline()
+		myTimeLine = self.Tconnector.get_my_timeline()
 		favourites = self.Tconnector.get_favourites()
 		following = self.Tconnector.get_friends()
 		
 		#setting htmls
 		settingBool = True
 		htmlTweets, ntweets = self.htmlTweetsSetting(tweets)
-		htmlPhoto, nphoto =  self.htmlPhotosSetting(photos)
+		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
+		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
 		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
 		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
 
 		self.ex.dataBrowser.setHtml(htmlTweets)
 
-		#setting buttons
+		#setting buttons properties
 		self.ex.backButton.setText("")
 		self.ex.backButton.setEnabled(False)
-		self.ex.nextButton.setText("Photos")
+		self.ex.nextButton.setText("My Tweets")
 
 		self.ex.nextButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
+															   htmlMyTweets = htmlMyTweets,
 															   htmlPhoto = htmlPhoto, 
 															   htmlFavourites=htmlFavourites,
 															   htmlFollowing = htmlFollowing))
 		self.ex.backButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
+															   htmlMyTweets = htmlMyTweets,
 															   htmlPhoto = htmlPhoto, 
 															   htmlFavourites=htmlFavourites,
 															   htmlFollowing = htmlFollowing))
 
 
 		#setting tweets number
-		self.ex.tweetsNumberLabel.setText(str(ntweets))
+		self.ex.tweetsNumberLabel.setText(str(nMyTweets))
 		#setting photos number
 		self.ex.photosNumberLabel.setText(str(nphoto))
 		#setting favourites number
@@ -85,10 +89,12 @@ class TwitterGUI_APP():
 
 		sys.exit(self.app.exec_())
 
+	#setting html variable which containts tweets and their numbers
+	#if everything is ok -> number of tweets is 20
 	def htmlTweetsSetting(self,tweets):
 		nphoto = 0
 		ntweets = 0
-		html = "<!DOCTYPE HTML><html><head><style></style></head><body>"
+		html = "<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}</style></head><body><hr>"
 		for item in tweets:
 			date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
 			text = item.text
@@ -125,10 +131,11 @@ class TwitterGUI_APP():
 		html += "</body></html>"
 		return html, ntweets
 
-	def htmlPhotosSetting(self,photos):
+	#setting html variable which contains an information about my photos and number of these
+	def htmlPhotosSetting(self,myTimeLine):
 		nphoto = 0
-		html = "<!DOCTYPE HTML><html><head><style></style></head><body>"
-		for item in photos:
+		html = "<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}</style></head><body><hr><br>"
+		for item in myTimeLine:
 			date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
 			if item.media is not None:
 				image = item.media[0].media_url
@@ -151,9 +158,11 @@ class TwitterGUI_APP():
 		html += "</body></html>"
 		return html, nphoto
 
+
+	#setting html variable which contains an information about acounts which I am following and number of these
 	def htmlFollowingSetting(self,following):
 		nfollowing = 0
-		html = "<!DOCTYPE HTML><html><head><style>b{font-size: 30px;}</style></head><body>"
+		html = "<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;} b{font-size: 30px;}</style></head><body><hr>"
 		for item in following:
 			nfollowing += 1
 			name = item.name
@@ -164,23 +173,31 @@ class TwitterGUI_APP():
 		html += "</body></html>"
 		return html, nfollowing
 
-	def buttonClicked(self, htmlTweets=None, 
+
+	#button clicked action
+	def buttonClicked(self, htmlTweets = None, 
+							htmlMyTweets = None,
                             htmlPhoto = None, 
-                            htmlFavourites=None,
-                            htmlFollowing=None):
+                            htmlFavourites = None,
+                            htmlFollowing = None):
 		sender = self.ex.MainWindow.sender()
-		if sender.text() == "Photos":
-			self.ex.dataBrowser.setHtml(htmlPhoto)
-			self.ex.dataThemeLabel.setText(sender.text())
-			self.ex.backButton.setEnabled(True)
-			self.ex.backButton.setText("Tweets")
-			self.ex.nextButton.setText("Messages")
-		elif sender.text() == "Tweets":
+		if sender.text() == "Tweets":
 			self.ex.dataBrowser.setHtml(htmlTweets)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setEnabled(False)
 			self.ex.backButton.setText("")
+			self.ex.nextButton.setText("My Tweets")
+		elif sender.text() == "My Tweets":
+			self.ex.dataBrowser.setHtml(htmlMyTweets)
+			self.ex.dataThemeLabel.setText(sender.text())
+			self.ex.backButton.setEnabled(True)
+			self.ex.backButton.setText("Tweets")
 			self.ex.nextButton.setText("Photos")
+		elif sender.text() == "Photos":
+			self.ex.dataBrowser.setHtml(htmlPhoto)
+			self.ex.dataThemeLabel.setText(sender.text())
+			self.ex.backButton.setText("My Tweets")
+			self.ex.nextButton.setText("Messages")
 		elif sender.text() == "Messages":
 			self.ex.dataBrowser.setHtml("<body>Lorem ipsum</body>")
 			self.ex.dataThemeLabel.setText(sender.text())
@@ -192,7 +209,6 @@ class TwitterGUI_APP():
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Messages")
 			self.ex.nextButton.setText("Followers")
-			pass
 		elif sender.text() == "Followers":
 			self.ex.dataBrowser.setHtml("<body>Lorem ipsum</body>")
 			self.ex.dataThemeLabel.setText(sender.text())
@@ -206,7 +222,6 @@ class TwitterGUI_APP():
 			self.ex.backButton.setText("Followers")
 			self.ex.nextButton.setEnabled(False)
 			self.ex.nextButton.setText("")
-			pass
 
 def main():
 	TwitterGUI_APP()
