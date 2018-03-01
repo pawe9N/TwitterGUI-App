@@ -74,6 +74,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.websiteLabel.setFont(font)
+        self.websiteLabel.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
         self.verticalLayout.addWidget(self.websiteLabel)
 
         ############################ posting tweet widget #####################################################################
@@ -234,6 +235,7 @@ class Ui_MainWindow(object):
         self.backButton.setFont(font)
         self.backButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.backButton.setStyleSheet("QPushButton {border: 1px solid white; font-weight: bold;border-top-right-radius: 10px; border-top-left-radius: 10px;} :hover {background-color: white;color:#1dcaff;} :disabled {border: 1px solid #141d26}")
+        self.backButton.setEnabled(False)
         self.navigationHBoxLayout.addWidget(self.backButton)
 
         self.nextButton = QtWidgets.QPushButton(self.navigationWidget)
@@ -271,7 +273,7 @@ class Ui_MainWindow(object):
         self.messagingVBoxLayout.addWidget(self.sendAMessageLabel)
 
         self.receiverLineEdit = QtWidgets.QLineEdit(self.messagingWidget)
-        self.receiverLineEdit.setStyleSheet("border: 1px solid white; margin: 1px; padding: 1px; background: #243447; color: #8899a6;")
+        self.receiverLineEdit.setStyleSheet("border: 1px solid white; margin: 1px; padding: 1px; background: #243447; font-size: 14px;")
         self.messagingVBoxLayout.addWidget(self.receiverLineEdit)
 
         self.messageLabel = QtWidgets.QLabel(self.messagingWidget)
@@ -284,7 +286,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.messageTextEdit.setFont(font)
-        self.messageTextEdit.setStyleSheet("border: 1px solid white; padding: 10px 5px; background: #243447;color: #8899a6;")
+        self.messageTextEdit.setStyleSheet("border: 1px solid white; padding: 10px 5px; background: #243447;")
         self.messagingVBoxLayout.addWidget(self.messageTextEdit)
 
         self.sendingMessageButton = QtWidgets.QPushButton(self.messagingWidget)
@@ -292,7 +294,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.sendingMessageButton.setFont(font)
         self.sendingMessageButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.sendingMessageButton.setStyleSheet("QPushButton {font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px;} QPushButton:hover {background-color: white;color:#1dcaff;}")
+        self.sendingMessageButton.setStyleSheet("QPushButton {font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px; border: 1px solid white;} QPushButton:hover {background-color: white;color:#1dcaff;}")
         self.messagingVBoxLayout.addWidget(self.sendingMessageButton)
 
         self.messagingVerticalBoxLayout.addLayout(self.messagingVBoxLayout)
@@ -309,8 +311,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "TwitterGUI-App"))
         self.profileNameLabel.setText(_translate("MainWindow", "Your Name"))
         self.profileHandleLabel.setText(_translate("MainWindow", "@YoutHandle"))
-        self.descriptionLabel.setText(_translate("MainWindow", "Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum rutrum sodales. Nullam mattis fermentum libero, non volutpat.\n"
-""))
+        self.descriptionLabel.setText(_translate("MainWindow", "Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque interdum rutrum sodales. Nullam mattis fermentum libero, non volutpat.\n"))
         self.locationLabel.setText(_translate("MainWindow", "Location:"))
         self.websiteLabel.setText(_translate("MainWindow", "Website:"))
         self.postingNewTweetLabel.setText(_translate("MainWindow", "Post a new tweet!"))
@@ -328,13 +329,9 @@ class Ui_MainWindow(object):
         self.photosLabel.setText(_translate("MainWindow", "Photos"))
         self.messagesNumberLabel.setText(_translate("MainWindow", "0"))
         self.dataThemeLabel.setText(_translate("MainWindow", "Tweets"))
-        self.backButton.setText(_translate("MainWindow", "Back"))
-        self.nextButton.setText(_translate("MainWindow", "Next"))
-        self.dataBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8.25pt;\">aaaaaaaaaaaaaaaaaaaaaaa</span></p></body></html>"))
+        self.backButton.setText(_translate("MainWindow", ""))
+        self.nextButton.setText(_translate("MainWindow", "My Tweets"))
+        self.dataBrowser.setHtml(_translate("MainWindow", "Test"))
         self.sendAMessageLabel.setText(_translate("MainWindow", "Send a message to:"))
         self.messageLabel.setText(_translate("MainWindow", "Message:"))
         self.sendingMessageButton.setText(_translate("MainWindow", "Send"))

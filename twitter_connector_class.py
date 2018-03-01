@@ -1,12 +1,6 @@
 import twitter
 from keys_class import Keys
-import urllib
-import requests
 import time
-import os.path
-import re
-import pprint
-
 
 class Twitter_Connector():
 	def __init__(self):
@@ -39,8 +33,14 @@ class Twitter_Connector():
 	def get_friends(self):
 		return self.api.GetFriends(screen_name = self.get_user_screen_name())
 
-	def post_status_message(self, tweet):
+	def post_tweet(self, tweet):
 		return self.api.PostUpdate(tweet)
+
+	def get_messages(self):
+		return self.api.GetDirectMessages()
+
+	def send_message(self, text, screen_name):
+		return self.api.PostDirectMessage(text, screen_name=screen_name)
 
 	def get_tweets(self):
 		return self.api.GetHomeTimeline()
@@ -54,9 +54,14 @@ class Twitter_Connector():
 """
 def main():
 	Tconnector = Twitter_Connector()
-	statuses = Tconnector.get_friends()
-	for item in statuses:
-		print(item.profile_image_url.split("/")[5])
+	messages = Tconnector.get_messages()
+	for message in messages:
+		name = message.sender_screen_name
+		text = message.text
+		date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(message.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
+		print(name, text, date)
+
 if __name__ == "__main__":
 	main()
 """
+
