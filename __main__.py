@@ -4,6 +4,7 @@ import twitter
 from keys_class import Keys
 from twitter_connector_class import Twitter_Connector
 from twitterGUI import Ui_MainWindow
+from choosing_account import UI_ChoosingAccount
 import urllib
 import requests
 import time
@@ -17,9 +18,48 @@ class TwitterGUI_APP():
 		self.Tconnector = Twitter_Connector()
 
 		#setting window
-		self.app = QtWidgets.QApplication(sys.argv)
-		self.ex = Ui_MainWindow()
+		app = QtWidgets.QApplication(sys.argv)
 		self.mainWindow = QtWidgets.QMainWindow()
+		self.ex = UI_ChoosingAccount()
+		self.ex.setupUi(self.mainWindow)
+
+		#setting tweets
+		tweets =  self.Tconnector.get_tweets()
+		myTimeLine = self.Tconnector.get_my_timeline()
+		messages = self.Tconnector.get_messages()
+		favourites = self.Tconnector.get_favourites()
+		following = self.Tconnector.get_friends()
+
+		#setting account
+		data = urllib.request.urlopen(self.Tconnector.get_user_image_url()).read()
+		self.pixmap = QtGui.QPixmap()
+		self.pixmap.loadFromData(data)
+		self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
+
+		self.ex.profileNameLabel.setText("@"+self.Tconnector.get_user_screen_name())
+
+		#start application
+		self.ex.submitButton.clicked.connect(lambda: self.start_application(tweets, myTimeLine, messages, favourites, following))
+
+		sys.exit(app.exec_())
+
+
+	def start_application(self, tweets, myTimeLine, messages, favourites, following):
+		#setting htmls
+		htmlTweets, ntweets = self.htmlTweetsSetting(tweets)
+		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
+
+		#closing previous window
+		self.ex.MainWindow.close()
+		self.ex.__del__()
+
+		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
+		htmlMessages, nmessages = self.htmlMessagesSetting(messages)
+		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
+		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
+
+		#setting new window
+		self.ex = Ui_MainWindow()
 		self.ex.setupUi(self.mainWindow)
 
 		#setting name from twitter
@@ -29,10 +69,7 @@ class TwitterGUI_APP():
 		self.ex.profileHandleLabel.setText("@"+self.Tconnector.get_user_screen_name())
 
 		#setting awatar
-		data = urllib.request.urlopen(self.Tconnector.get_user_image_url()).read()
-		pixmap = QtGui.QPixmap()
-		pixmap.loadFromData(data)
-		self.ex.awatarLabel.setPixmap(QtGui.QPixmap(pixmap))
+		self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
 
 		#setting description
 		self.ex.descriptionLabel.setText("Description: {}".format(self.Tconnector.get_user_description()))
@@ -40,21 +77,6 @@ class TwitterGUI_APP():
 		self.ex.locationLabel.setText("\nLocation: {}".format(self.Tconnector.get_user_location()))
 		#setting website
 		self.ex.websiteLabel.setText("Website: {}".format(self.Tconnector.get_user_website()))
-
-		#setting tweets
-		tweets =  self.Tconnector.get_tweets()
-		myTimeLine = self.Tconnector.get_my_timeline()
-		messages = self.Tconnector.get_messages()
-		favourites = self.Tconnector.get_favourites()
-		following = self.Tconnector.get_friends()
-
-		#setting htmls
-		htmlTweets, ntweets = self.htmlTweetsSetting(tweets)
-		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
-		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
-		htmlMessages, nmessages = self.htmlMessagesSetting(messages)
-		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
-		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
 
 		self.ex.dataBrowser.setHtml(htmlTweets)
 
@@ -82,16 +104,15 @@ class TwitterGUI_APP():
 															   htmlMessages = htmlMessages, 
 															   htmlFavourites=htmlFavourites,
 															   htmlFollowing = htmlFollowing))
-		self.ex.postingNewTweetButton.clicked.connect(lambda: self.postTweet())
-		self.ex.sendingMessageButton.clicked.connect(lambda: self.sendMessage())
 
-		sys.exit(self.app.exec_())
+		self.ex.postingNewTweetButton.clicked.connect(lambda: self.postTweet())
+
+		self.ex.sendingMessageButton.clicked.connect(lambda: self.sendMessage())
 
 
 	#setting html variable which containts tweets and their numbers
 	#if everything is ok -> number of tweets is 20
 	def htmlTweetsSetting(self,tweets):
-		nphoto = 0
 		ntweets = 0
 		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}</style></head><body><hr>"]
 		for item in tweets:
@@ -103,7 +124,6 @@ class TwitterGUI_APP():
 			if item.media is not None:
 				if item.media[0].type == "photo":
 					ntweets += 1
-					nphoto += 1
 					image = item.media[0].media_url
 					if not (os.path.exists("images/{}.png".format(image[27:]))):
 						urllib.request.urlretrieve(image, "images/{}".format(image[27:]))
@@ -112,7 +132,6 @@ class TwitterGUI_APP():
 					else:
 						html.append("<center><b>{}</b><br><br><img src='images/{}'><br>Date: {}</center><hr>".format(text,image[27:],date))
 				elif item.media[0].type == "animated_gif":
-					nphoto += 1
 					ntweets += 1
 					image = item.media[0].media_url
 					if not (os.path.exists("images/{}.png".format(image[39:]))):
@@ -130,7 +149,7 @@ class TwitterGUI_APP():
 	#setting html variable which contains an information about my photos and number of these
 	def htmlPhotosSetting(self,myTimeLine):
 		nphoto = 0
-		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}</style></head><body><hr><br>"]
+		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}</style></head><body><hr>"]
 		for item in myTimeLine:
 			date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(item.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
 			if item.media is not None:
@@ -140,28 +159,29 @@ class TwitterGUI_APP():
 					if not (os.path.exists("images/{}.png".format(image[27:]))):
 						urllib.request.urlretrieve(image, "images/{}".format(image[27:]))
 					if item.media[0].sizes["medium"]["w"] > 400:
-						html.append("<center><img width=400 height=300 src='images/{}'><br>Date: {}</center><hr>".format(image[27:],date))
+						html.append("<center><b>#{}</b><br><img width=400 height=300 src='images/{}'><br>Date: {}</center><hr>".format(nphoto, image[27:],date))
 					else:
-						html.append("<center><img src='images/{}'><br>Date: {}</center><hr>".format(image[27:],date))
+						html.append("<center><b>#{}</b><br><img src='images/{}'><br>Date: {}</center><hr>".format(nphoto, image[27:],date))
 				elif item.media[0].type == "animated_gif":
 					nphoto += 1
 					if not (os.path.exists("images/{}.png".format(image[39:]))):
 						urllib.request.urlretrieve(image, "images/{}".format(image[39:]))
 					if item.media[0].sizes["medium"]["w"] > 400:
-						html.append("<center><img width=400 height=300 src='images/{}'><br>Date: {}</center><hr>".format(image[39:],date))
+						html.append("<center><b>#{}</b><br><img width=400 height=300 src='images/{}'><br>Date: {}</center><hr>".format(nphoto, image[39:],date))
 					else:
-						html.append("<center><img src='images/{}'><br>Date: {}</center><hr>".format(image[39:],date))
+						html.append("<center><b>#{}</b><br><img src='images/{}'><br>Date: {}</center><hr>".format(nphoto, image[39:],date))
 		return "".join(html), nphoto
+
 
 	def htmlMessagesSetting(self, messages):
 		nmessages = 0
-		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;}b{font-size: 20px;background-color:#1DA1F2;}</style></head><body><hr>"]
+		html = ["<!DOCTYPE HTML><html><head><style>.sender{background-color:#1DA1F2;color: white;}b{font-size: 20px;}</style></head><body><hr>"]
 		for message in messages:
 			nmessages += 1
 			sender_name = message.sender_screen_name
 			text = "".join(["&nbsp;","\"",message.text,"\"","&nbsp;"])
 			date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(message.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
-			html.append("<center>Message:<br><b>{}</b><br>Sender: {}<br>Date: {} </center><hr>".format(text, sender_name, date))
+			html.append("<center class='sender' >Message:<br><b>{}</b><br>Sender: {}<br>Date: {} </center><hr>".format(text, sender_name, date))
 		return 	"".join(html), nmessages
 
 
@@ -177,6 +197,7 @@ class TwitterGUI_APP():
 				urllib.request.urlretrieve(image, "images/{}".format(image.split("/")[5]))
 			html.append("<center><img src='images/{}'><br><b>{}</b></center><hr>".format(image.split("/")[5],name))
 		return "".join(html), nfollowing
+
 
 	#posting tweet
 	def postTweet(self):
@@ -248,7 +269,6 @@ class TwitterGUI_APP():
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Photos")
 			self.ex.nextButton.setText("Following")
-			pass
 		elif sender.text() == "Following":
 			self.ex.dataBrowser.setHtml(htmlFollowing)
 			self.ex.dataThemeLabel.setText(sender.text())
@@ -260,7 +280,6 @@ class TwitterGUI_APP():
 			self.ex.backButton.setText("Following")
 			self.ex.nextButton.setEnabled(True)
 			self.ex.nextButton.setText("Favourites")
-			pass
 		elif sender.text() == "Favourites":
 			self.ex.dataBrowser.setHtml(htmlFavourites)
 			self.ex.dataThemeLabel.setText(sender.text())
@@ -268,8 +287,14 @@ class TwitterGUI_APP():
 			self.ex.nextButton.setEnabled(False)
 			self.ex.nextButton.setText("")
 
+	#destructor 
+	def __del__(self):
+		del self
+
+
 def main():
 	TwitterGUI_APP()
+
 
 if __name__ == "__main__":
 	main()
