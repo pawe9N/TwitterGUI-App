@@ -293,15 +293,6 @@ class Ui_MainWindow(object):
 
         messagingVerticalBoxLayout.addLayout(messagingVBoxLayout)
 
-        self.messagesButton = QtWidgets.QPushButton(mainWidget)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.messagesButton.setFont(font)
-        self.messagesButton.setText("Messages")
-        self.messagesButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.messagesButton.setStyleSheet("QPushButton {background-color:#141d26; font-weight: bold; border-top-right-radius: 10px; border-top-left-radius: 10px; border: 1px solid white; color:white;} QPushButton:hover {background-color: white;color:#1dcaff;}")
-        self.messagesButton.setGeometry(QtCore.QRect(QtCore.QRect(70, 700, 200, 100)))
-
         ############################ MainWindow and data ###################################################################################
 
         self.MainWindow.setCentralWidget(mainWidget)

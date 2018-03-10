@@ -31,7 +31,7 @@ class UI_ChoosingAccount(object):
 
         self.profileNameLabel = QtWidgets.QLabel(mainWidget)
         self.profileNameLabel.setText("Account login")
-        self.profileNameLabel.setGeometry(QtCore.QRect(525, 425, 200, 100))
+        self.profileNameLabel.setGeometry(QtCore.QRect(535, 425, 200, 100))
         self.profileNameLabel.setStyleSheet("font-size: 25px;")
 
         self.submitButton = QtWidgets.QPushButton(mainWidget)

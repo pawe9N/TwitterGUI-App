@@ -36,7 +36,10 @@ class Twitter_Connector():
 	def post_tweet(self, tweet):
 		return self.api.PostUpdate(tweet)
 
-	def get_messages(self):
+	def get_messagesFM(self):
+		return self.api.GetSentDirectMessages()
+
+	def get_messagesTM(self):
 		return self.api.GetDirectMessages()
 
 	def send_message(self, text, screen_name):
@@ -51,17 +54,17 @@ class Twitter_Connector():
 	def get_my_timeline(self):
 		return self.api.GetUserTimeline(screen_name = self.get_user_screen_name())
 
+	def get_followers(self):
+		return self.api.GetFollowers(screen_name = self.get_user_screen_name())
 """
 def main():
 	Tconnector = Twitter_Connector()
-	messages = Tconnector.get_messages()
-	for message in messages:
-		name = message.sender_screen_name
-		text = message.text
-		date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(message.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
-		print(name, text, date)
+	messages = Tconnector.api.GetSentDirectMessages()
+	for follower in messages:
+		print(follower, "\n")
+
+		
 
 if __name__ == "__main__":
 	main()
 """
-

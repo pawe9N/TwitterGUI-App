@@ -2,9 +2,10 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 import twitter
 from keys_class import Keys
-from twitter_connector_class import Twitter_Connector
+from twitter_connector import Twitter_Connector
 from twitterGUI import Ui_MainWindow
 from choosing_account import UI_ChoosingAccount
+from connection_error import UI_ConnectionError
 import urllib
 import requests
 import time
@@ -14,37 +15,50 @@ import re
 class TwitterGUI_APP():
 
 	def __init__(self):
-		#setting twitter connection
-		self.Tconnector = Twitter_Connector()
+		try:
+			#setting twitter connection
+			self.Tconnector = Twitter_Connector()
 
-		#setting window
-		app = QtWidgets.QApplication(sys.argv)
-		self.mainWindow = QtWidgets.QMainWindow()
-		self.ex = UI_ChoosingAccount()
-		self.ex.setupUi(self.mainWindow)
+			#setting window
+			app = QtWidgets.QApplication(sys.argv)
+			self.mainWindow = QtWidgets.QMainWindow()
+			self.ex = UI_ChoosingAccount()
+			self.ex.setupUi(self.mainWindow)
 
-		#setting tweets
-		tweets =  self.Tconnector.get_tweets()
-		myTimeLine = self.Tconnector.get_my_timeline()
-		messages = self.Tconnector.get_messages()
-		favourites = self.Tconnector.get_favourites()
-		following = self.Tconnector.get_friends()
+			#setting tweets
+			tweets =  self.Tconnector.get_tweets()
+			myTimeLine = self.Tconnector.get_my_timeline()
+			messagesTM = self.Tconnector.get_messagesTM()
+			messagesFM = self.Tconnector.get_messagesFM()
+			favourites = self.Tconnector.get_favourites()
+			following = self.Tconnector.get_friends()
+			followers = self.Tconnector.get_followers()
 
-		#setting account
-		data = urllib.request.urlopen(self.Tconnector.get_user_image_url()).read()
-		self.pixmap = QtGui.QPixmap()
-		self.pixmap.loadFromData(data)
-		self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
+			#setting account
+			data = urllib.request.urlopen(self.Tconnector.get_user_image_url()).read()
+			self.pixmap = QtGui.QPixmap()
+			self.pixmap.loadFromData(data)
+			self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
 
-		self.ex.profileNameLabel.setText("@"+self.Tconnector.get_user_screen_name())
+			self.ex.profileNameLabel.setText("@"+self.Tconnector.get_user_screen_name())
 
-		#start application
-		self.ex.submitButton.clicked.connect(lambda: self.start_application(tweets, myTimeLine, messages, favourites, following))
+			#start application
+			self.ex.submitButton.clicked.connect(lambda: self.start_application(tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following))
 
-		sys.exit(app.exec_())
+			app.aboutToQuit.connect(self.closeEvent)
+
+			sys.exit(app.exec_())
+
+		except:
+			#making error window
+			app = QtWidgets.QApplication(sys.argv)
+			ex = UI_ConnectionError()
+			mainWindow = QtWidgets.QMainWindow()
+			ex.setupUi(mainWindow)
+			sys.exit(app.exec_())
 
 
-	def start_application(self, tweets, myTimeLine, messages, favourites, following):
+	def start_application(self, tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following):
 		#setting htmls
 		htmlTweets, ntweets = self.htmlTweetsSetting(tweets)
 		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
@@ -54,9 +68,11 @@ class TwitterGUI_APP():
 		self.ex.__del__()
 
 		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
-		htmlMessages, nmessages = self.htmlMessagesSetting(messages)
+		htmlMessagesTM, nmessagesTM = self.htmlMessagesSetting(messagesTM)
+		htmlMessagesFM, nmessagesFM = self.htmlMessagesSetting(messagesFM)
 		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
 		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
+		htmlFollowers, nfollowers = self.htmlFollowingSetting(followers)
 
 		#setting new window
 		self.ex = Ui_MainWindow()
@@ -84,25 +100,31 @@ class TwitterGUI_APP():
 		self.ex.tweetsNumberLabel.setText(str(nMyTweets))
 		#setting photos number
 		self.ex.photosNumberLabel.setText(str(nphoto))
-		#setting messages number
-		self.ex.messagesNumberLabel.setText(str(nmessages))
+		#setting messages from me number
+		self.ex.messagesNumberLabel.setText(str(nmessagesFM))
 		#setting favourites number
 		self.ex.favouritesNumberLabel.setText(str(nfavourites))
 		#setting following number
 		self.ex.followingNumberLabel.setText(str(nfollowing))
+		#setting followers number
+		self.ex.followersNumberLabel.setText(str(nfollowers))
 
 		#setting buttons actions
 		self.ex.nextButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
 															   htmlMyTweets = htmlMyTweets,
 															   htmlPhoto = htmlPhoto,
-															   htmlMessages = htmlMessages, 
-															   htmlFavourites=htmlFavourites,
+															   htmlMessagesTM = htmlMessagesTM, 
+															   htmlMessagesFM = htmlMessagesFM, 
+															   htmlFavourites = htmlFavourites,
+															   htmlFollowers = htmlFollowers,
 															   htmlFollowing = htmlFollowing))
 		self.ex.backButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
 															   htmlMyTweets = htmlMyTweets,
 															   htmlPhoto = htmlPhoto, 
-															   htmlMessages = htmlMessages, 
+															   htmlMessagesTM = htmlMessagesTM,
+															   htmlMessagesFM = htmlMessagesFM, 
 															   htmlFavourites=htmlFavourites,
+															   htmlFollowers = htmlFollowers,
 															   htmlFollowing = htmlFollowing))
 
 		self.ex.postingNewTweetButton.clicked.connect(lambda: self.postTweet())
@@ -128,7 +150,7 @@ class TwitterGUI_APP():
 					if not (os.path.exists("images/{}.png".format(image[27:]))):
 						urllib.request.urlretrieve(image, "images/{}".format(image[27:]))
 					if item.media[0].sizes["medium"]["w"] > 400:
-						html.append("<center><b>{}</b><br><br><img width=400 height=400 src='images/{}'><br>Date: {}</center><hr>".format(text,image[27:],date))
+						html.append("<center><b>{}</b><br><br><img width=400 height=300 src='images/{}'><br>Date: {}</center><hr>".format(text,image[27:],date))
 					else:
 						html.append("<center><b>{}</b><br><br><img src='images/{}'><br>Date: {}</center><hr>".format(text,image[27:],date))
 				elif item.media[0].type == "animated_gif":
@@ -137,7 +159,7 @@ class TwitterGUI_APP():
 					if not (os.path.exists("images/{}.png".format(image[39:]))):
 						urllib.request.urlretrieve(image, "images/{}".format(image[39:]))
 					if item.media[0].sizes["medium"]["w"] > 400:
-						html.append("<center><b>{}</b><br><br><img width=400 height=400 src='images/{}'><br>Date: {}</center> <hr>".format(text,image[39:],date))
+						html.append("<center><b>{}</b><br><br><img width=400 height=300 src='images/{}'><br>Date: {}</center> <hr>".format(text,image[39:],date))
 					else:
 						html.append("<center><b>{}</b><br><br><img src='images/{}'><br>Date: {}</center> <hr>".format(text,image[39:],date))
 			else:
@@ -172,79 +194,95 @@ class TwitterGUI_APP():
 						html.append("<center><b>#{}</b><br><img src='images/{}'><br>Date: {}</center><hr>".format(nphoto, image[39:],date))
 		return "".join(html), nphoto
 
-
+	#setting html messages
 	def htmlMessagesSetting(self, messages):
 		nmessages = 0
-		html = ["<!DOCTYPE HTML><html><head><style>.sender{background-color:#1DA1F2;color: white;}b{font-size: 20px;}</style></head><body><hr>"]
+		html = ["<!DOCTYPE HTML><html><head>body{background-color:#141d26;color: white;} b{font-size: 30px;}</style></head><body></head><body><hr>"]
 		for message in messages:
 			nmessages += 1
 			sender_name = message.sender_screen_name
+			recipient_name = message.recipient_screen_name
 			text = "".join(["&nbsp;","\"",message.text,"\"","&nbsp;"])
 			date =  time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(message.created_at,'%a %b %d %H:%M:%S +0000 %Y'))
-			html.append("<center class='sender' >Message:<br><b>{}</b><br>Sender: {}<br>Date: {} </center><hr>".format(text, sender_name, date))
+			html.append("To:{}<br>From: {}<br><center style='color:white;'><b>{}</b></center><br>Date: {} </center><hr>".format( recipient_name, sender_name, text, date))
 		return 	"".join(html), nmessages
 
 
 	#setting html variable which contains an information about acounts which I am following and number of these
 	def htmlFollowingSetting(self,following):
 		nfollowing = 0
-		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;} b{font-size: 30px;}</style></head><body><hr>"]
+		html = ["<!DOCTYPE HTML><html><head><style>body{background-color:#141d26;color: white;} b{font-size: 30px;} .description{font-size: 18px;} </style></head><body><hr>"]
 		for item in following:
 			nfollowing += 1
 			name = item.name
 			image = item.profile_image_url
+			description = item.description
 			if not (os.path.exists("images/{}.png".format(image.split("/")[5]))):
 				urllib.request.urlretrieve(image, "images/{}".format(image.split("/")[5]))
-			html.append("<center><img src='images/{}'><br><b>{}</b></center><hr>".format(image.split("/")[5],name))
+			html.append("<center><img src='images/{}'><br><b>{}</b><div class='description'>{}</div></center><hr>".format(image.split("/")[5],name, description))
 		return "".join(html), nfollowing
 
 
 	#posting tweet
 	def postTweet(self):
-		tweetText = self.ex.tweetTextEdit.toPlainText()
-		self.Tconnector.post_tweet(tweetText)
+		try:
+			tweetText = self.ex.tweetTextEdit.toPlainText()
+			self.Tconnector.post_tweet(tweetText)
 
-		myTimeLine = self.Tconnector.get_my_timeline()
-		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
-		self.ex.dataBrowser.setHtml(htmlMyTweets)
-		self.ex.tweetsNumberLabel.setText(str(nMyTweets))
+			myTimeLine = self.Tconnector.get_my_timeline()
+			htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
+			self.ex.dataBrowser.setHtml(htmlMyTweets)
+			self.ex.tweetsNumberLabel.setText(str(nMyTweets))
 
-		self.ex.dataThemeLabel.setText("My Tweets")
-		self.ex.backButton.setEnabled(True)
-		self.ex.backButton.setText("Tweets")
-		self.ex.nextButton.setText("Photos")
+			self.ex.dataThemeLabel.setText("My Tweets")
+			self.ex.backButton.setEnabled(True)
+			self.ex.backButton.setText("Tweets")
+			self.ex.nextButton.setText("Photos")
 
-		self.ex.tweetTextEdit.setPlainText("")
+			self.ex.tweetTextEdit.setPlainText("")
+
+		except:
+			print("Posting tweet failed!")
+			self.ex.tweetTextEdit.setPlainText("")
 
 
 	#sending message
 	def sendMessage(self):
-		receiver = self.ex.receiverLineEdit.text()
-		message = self.ex.messageTextEdit.toPlainText()
-		self.Tconnector.send_message(message, receiver)
 
-		messages = self.Tconnector.get_messages()
-		htmlMessages, nMessages = self.htmlMessagesSetting(messages)
-		self.ex.dataBrowser.setHtml(htmlMessages)
-		self.ex.tweetsNumberLabel.setText(str(nMessages))
+		try:
+			receiver = self.ex.receiverLineEdit.text()
+			message = self.ex.messageTextEdit.toPlainText()
+			self.Tconnector.send_message(message, receiver)
 
-		self.ex.dataBrowser.setHtml(htmlMessages)
-		self.ex.dataThemeLabel.setText("Messages")
-		self.ex.backButton.setEnabled(True)
-		self.ex.backButton.setText("Photos")
-		self.ex.nextButton.setEnabled(True)
-		self.ex.nextButton.setText("Following")
+			messages = self.Tconnector.get_messagesFM()
+			htmlMessagesFM, nMessagesFM = self.htmlMessagesSetting(messages)
+			self.ex.dataBrowser.setHtml(htmlMessagesFM)
+			self.ex.tweetsNumberLabel.setText(str(nMessagesFM))
 
-		self.ex.receiverLineEdit.setText("")
-		self.ex.messageTextEdit.setPlainText("")
+			self.ex.dataBrowser.setHtml(htmlMessagesFM)
+			self.ex.dataThemeLabel.setText("Messages from Me")
+			self.ex.backButton.setEnabled(True)
+			self.ex.backButton.setText("Messages to Me")
+			self.ex.nextButton.setEnabled(True)
+			self.ex.nextButton.setText("Following")
+
+			self.ex.receiverLineEdit.setText("")
+			self.ex.messageTextEdit.setPlainText("")
+
+		except:
+			print("Message sending failed!")
+			self.ex.receiverLineEdit.setText("")
+			self.ex.messageTextEdit.setPlainText("")
 
 
 	#button clicked action
 	def buttonClicked(self, htmlTweets = None, 
 							htmlMyTweets = None,
                             htmlPhoto = None,
-                            htmlMessages = None, 
+                            htmlMessagesFM = None, 
+                            htmlMessagesTM = None,
                             htmlFavourites = None,
+                            htmlFollowers = None,
                             htmlFollowing = None):
 		sender = self.ex.MainWindow.sender()
 		if sender.text() == "Tweets":
@@ -263,19 +301,24 @@ class TwitterGUI_APP():
 			self.ex.dataBrowser.setHtml(htmlPhoto)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("My Tweets")
-			self.ex.nextButton.setText("Messages")
-		elif sender.text() == "Messages":
-			self.ex.dataBrowser.setHtml(htmlMessages)
+			self.ex.nextButton.setText("Messages to Me")
+		elif sender.text() == "Messages to Me":
+			self.ex.dataBrowser.setHtml(htmlMessagesTM)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Photos")
+			self.ex.nextButton.setText("Messages from Me")
+		elif sender.text() == "Messages from Me":
+			self.ex.dataBrowser.setHtml(htmlMessagesFM)
+			self.ex.dataThemeLabel.setText(sender.text())
+			self.ex.backButton.setText("Messages to Me")
 			self.ex.nextButton.setText("Following")
 		elif sender.text() == "Following":
 			self.ex.dataBrowser.setHtml(htmlFollowing)
 			self.ex.dataThemeLabel.setText(sender.text())
-			self.ex.backButton.setText("Messages")
+			self.ex.backButton.setText("Messages from Me")
 			self.ex.nextButton.setText("Followers")
 		elif sender.text() == "Followers":
-			self.ex.dataBrowser.setHtml("<body>Lorem ipsum</body>")
+			self.ex.dataBrowser.setHtml(htmlFollowers)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Following")
 			self.ex.nextButton.setEnabled(True)
@@ -290,6 +333,10 @@ class TwitterGUI_APP():
 	#destructor 
 	def __del__(self):
 		del self
+
+	#event for closing window without error
+	def closeEvent(self):
+		sys.exit(0)
 
 
 def main():
