@@ -1,11 +1,13 @@
 import sys
+sys.path.insert(0, sys.path[0]+'\\classes')
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 import twitter
-from keys_class import Keys
-from twitter_connector import Twitter_Connector
-from twitterGUI import Ui_MainWindow
-from choosing_account import UI_ChoosingAccount
-from connection_error import UI_ConnectionError
+from classes.keys_class import Keys
+from classes.twitter_connector import Twitter_Connector
+from classes.twitterGUI import Ui_MainWindow
+from classes.choosing_account import UI_ChoosingAccount
+from classes.connection_error import UI_ConnectionError
 import urllib
 import requests
 import time
