@@ -17,33 +17,33 @@ class TwitterGUI_APP():
 	def __init__(self):
 		try:
 			#setting twitter connection
-			self.Tconnector = Twitter_Connector()
+			Tconnector = Twitter_Connector()
 
 			#setting window
 			app = QtWidgets.QApplication(sys.argv)
-			self.mainWindow = QtWidgets.QMainWindow()
+			mainWindow = QtWidgets.QMainWindow()
 			self.ex = UI_ChoosingAccount()
-			self.ex.setupUi(self.mainWindow)
+			self.ex.setupUi(mainWindow)
 
 			#setting tweets
-			tweets =  self.Tconnector.get_tweets()
-			myTimeLine = self.Tconnector.get_my_timeline()
-			messagesTM = self.Tconnector.get_messagesTM()
-			messagesFM = self.Tconnector.get_messagesFM()
-			favourites = self.Tconnector.get_favourites()
-			following = self.Tconnector.get_friends()
-			followers = self.Tconnector.get_followers()
+			tweets =  Tconnector.get_tweets()
+			myTimeLine = Tconnector.get_my_timeline()
+			messagesTM = Tconnector.get_messagesTM()
+			messagesFM = Tconnector.get_messagesFM()
+			favourites = Tconnector.get_favourites()
+			following = Tconnector.get_friends()
+			followers = Tconnector.get_followers()
 
 			#setting account
-			data = urllib.request.urlopen(self.Tconnector.get_user_image_url()).read()
+			data = urllib.request.urlopen(Tconnector.get_user_image_url()).read()
 			self.pixmap = QtGui.QPixmap()
 			self.pixmap.loadFromData(data)
 			self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
 
-			self.ex.profileNameLabel.setText("@"+self.Tconnector.get_user_screen_name())
+			self.ex.profileNameLabel.setText("@"+Tconnector.get_user_screen_name())
 
 			#start application
-			self.ex.submitButton.clicked.connect(lambda: self.start_application(tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following))
+			self.ex.submitButton.clicked.connect(lambda: self.start_application(tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following, mainWindow, Tconnector))
 
 			app.aboutToQuit.connect(self.closeEvent)
 
@@ -58,50 +58,51 @@ class TwitterGUI_APP():
 			sys.exit(app.exec_())
 
 
-	def start_application(self, tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following):
+	def start_application(self, tweets, myTimeLine, messagesTM, messagesFM, favourites, followers, following, mainWindow, Tconnector):
+		#setting static htmls
+		self.htmlMyTweets, self.nMyTweets = self.htmlTweetsSetting(myTimeLine)
+		self.htmlMessagesFM, self.nmessagesFM = self.htmlMessagesSetting(messagesFM)
+		self.htmlMessagesTM, nmessagesTM = self.htmlMessagesSetting(messagesTM)
+
 		#setting htmls
 		htmlTweets, ntweets = self.htmlTweetsSetting(tweets)
-		htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
-
+		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
+		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
+		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
+		htmlFollowers, nfollowers = self.htmlFollowingSetting(followers)
+		
 		#closing previous window
 		self.ex.MainWindow.close()
 		self.ex.__del__()
 
-		htmlPhoto, nphoto =  self.htmlPhotosSetting(myTimeLine)
-		htmlMessagesTM, nmessagesTM = self.htmlMessagesSetting(messagesTM)
-		htmlMessagesFM, nmessagesFM = self.htmlMessagesSetting(messagesFM)
-		htmlFavourites, nfavourites = self.htmlTweetsSetting(favourites)
-		htmlFollowing, nfollowing = self.htmlFollowingSetting(following)
-		htmlFollowers, nfollowers = self.htmlFollowingSetting(followers)
-
 		#setting new window
 		self.ex = Ui_MainWindow()
-		self.ex.setupUi(self.mainWindow)
+		self.ex.setupUi(mainWindow)
 
 		#setting name from twitter
-		self.ex.profileNameLabel.setText(self.Tconnector.get_user_name())
+		self.ex.profileNameLabel.setText(Tconnector.get_user_name())
 
 		#setting screen name from twitter
-		self.ex.profileHandleLabel.setText("@"+self.Tconnector.get_user_screen_name())
+		self.ex.profileHandleLabel.setText("@"+Tconnector.get_user_screen_name())
 
 		#setting awatar
 		self.ex.awatarLabel.setPixmap(QtGui.QPixmap(self.pixmap))
 
 		#setting description
-		self.ex.descriptionLabel.setText("Description: {}".format(self.Tconnector.get_user_description()))
+		self.ex.descriptionLabel.setText("Description: {}".format(Tconnector.get_user_description()))
 		#setting location
-		self.ex.locationLabel.setText("\nLocation: {}".format(self.Tconnector.get_user_location()))
+		self.ex.locationLabel.setText("\nLocation: {}".format(Tconnector.get_user_location()))
 		#setting website
-		self.ex.websiteLabel.setText("Website: {}".format(self.Tconnector.get_user_website()))
+		self.ex.websiteLabel.setText("Website: {}".format(Tconnector.get_user_website()))
 
 		self.ex.dataBrowser.setHtml(htmlTweets)
 
 		#setting tweets number
-		self.ex.tweetsNumberLabel.setText(str(nMyTweets))
+		self.ex.tweetsNumberLabel.setText(str(self.nMyTweets))
 		#setting photos number
 		self.ex.photosNumberLabel.setText(str(nphoto))
 		#setting messages from me number
-		self.ex.messagesNumberLabel.setText(str(nmessagesFM))
+		self.ex.messagesNumberLabel.setText(str(self.nmessagesFM))
 		#setting favourites number
 		self.ex.favouritesNumberLabel.setText(str(nfavourites))
 		#setting following number
@@ -110,26 +111,22 @@ class TwitterGUI_APP():
 		self.ex.followersNumberLabel.setText(str(nfollowers))
 
 		#setting buttons actions
-		self.ex.nextButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
-															   htmlMyTweets = htmlMyTweets,
+		self.ex.nextButton.clicked.connect(lambda: self.buttonClicked(mainWindow,
+															   htmlTweets = htmlTweets,
 															   htmlPhoto = htmlPhoto,
-															   htmlMessagesTM = htmlMessagesTM, 
-															   htmlMessagesFM = htmlMessagesFM, 
 															   htmlFavourites = htmlFavourites,
 															   htmlFollowers = htmlFollowers,
 															   htmlFollowing = htmlFollowing))
-		self.ex.backButton.clicked.connect(lambda: self.buttonClicked(htmlTweets = htmlTweets,
-															   htmlMyTweets = htmlMyTweets,
+		self.ex.backButton.clicked.connect(lambda: self.buttonClicked(mainWindow,
+															   htmlTweets = htmlTweets,
 															   htmlPhoto = htmlPhoto, 
-															   htmlMessagesTM = htmlMessagesTM,
-															   htmlMessagesFM = htmlMessagesFM, 
 															   htmlFavourites=htmlFavourites,
 															   htmlFollowers = htmlFollowers,
 															   htmlFollowing = htmlFollowing))
 
-		self.ex.postingNewTweetButton.clicked.connect(lambda: self.postTweet())
+		self.ex.postingNewTweetButton.clicked.connect(lambda: self.postTweet(Tconnector))
 
-		self.ex.sendingMessageButton.clicked.connect(lambda: self.sendMessage())
+		self.ex.sendingMessageButton.clicked.connect(lambda: self.sendMessage(Tconnector))
 
 
 	#setting html variable which containts tweets and their numbers
@@ -223,16 +220,16 @@ class TwitterGUI_APP():
 		return "".join(html), nfollowing
 
 
-	#posting tweet
-	def postTweet(self):
+	#posting tweet and updating interface
+	def postTweet(self, Tconnector):
 		try:
 			tweetText = self.ex.tweetTextEdit.toPlainText()
-			self.Tconnector.post_tweet(tweetText)
+			Tconnector.post_tweet(tweetText)
 
-			myTimeLine = self.Tconnector.get_my_timeline()
-			htmlMyTweets, nMyTweets = self.htmlTweetsSetting(myTimeLine)
-			self.ex.dataBrowser.setHtml(htmlMyTweets)
-			self.ex.tweetsNumberLabel.setText(str(nMyTweets))
+			myTimeLine = Tconnector.get_my_timeline()
+			self.htmlMyTweets, self.nMyTweets = self.htmlTweetsSetting(myTimeLine)
+			self.ex.dataBrowser.setHtml(self.htmlMyTweets)
+			self.ex.tweetsNumberLabel.setText(str(self.nMyTweets))
 
 			self.ex.dataThemeLabel.setText("My Tweets")
 			self.ex.backButton.setEnabled(True)
@@ -246,20 +243,21 @@ class TwitterGUI_APP():
 			self.ex.tweetTextEdit.setPlainText("")
 
 
-	#sending message
-	def sendMessage(self):
-
+	#sending message and updating interface
+	def sendMessage(self, Tconnector):
 		try:
 			receiver = self.ex.receiverLineEdit.text()
 			message = self.ex.messageTextEdit.toPlainText()
-			self.Tconnector.send_message(message, receiver)
+			Tconnector.send_message(message, receiver)
 
-			messages = self.Tconnector.get_messagesFM()
-			htmlMessagesFM, nMessagesFM = self.htmlMessagesSetting(messages)
-			self.ex.dataBrowser.setHtml(htmlMessagesFM)
-			self.ex.tweetsNumberLabel.setText(str(nMessagesFM))
+			messagesFM = Tconnector.get_messagesFM()
+			messagesTM = Tconnector.get_messagesTM()
+			self.htmlMessagesFM, self.nmessagesFM = self.htmlMessagesSetting(messagesFM)
+			self.htmlMessagesTM, nmessagesTM = self.htmlMessagesSetting(messagesTM)
 
-			self.ex.dataBrowser.setHtml(htmlMessagesFM)
+			self.ex.dataBrowser.setHtml(self.htmlMessagesFM)
+			self.ex.messagesNumberLabel.setText(str(self.nmessagesFM))
+
 			self.ex.dataThemeLabel.setText("Messages from Me")
 			self.ex.backButton.setEnabled(True)
 			self.ex.backButton.setText("Messages to Me")
@@ -276,15 +274,14 @@ class TwitterGUI_APP():
 
 
 	#button clicked action
-	def buttonClicked(self, htmlTweets = None, 
-							htmlMyTweets = None,
+	def buttonClicked(self, mainWindow,
+						    htmlTweets = None, 
                             htmlPhoto = None,
-                            htmlMessagesFM = None, 
                             htmlMessagesTM = None,
                             htmlFavourites = None,
                             htmlFollowers = None,
                             htmlFollowing = None):
-		sender = self.ex.MainWindow.sender()
+		sender = mainWindow.sender()
 		if sender.text() == "Tweets":
 			self.ex.dataBrowser.setHtml(htmlTweets)
 			self.ex.dataThemeLabel.setText(sender.text())
@@ -292,9 +289,10 @@ class TwitterGUI_APP():
 			self.ex.backButton.setText("")
 			self.ex.nextButton.setText("My Tweets")
 		elif sender.text() == "My Tweets":
-			self.ex.dataBrowser.setHtml(htmlMyTweets)
+			self.ex.dataBrowser.setHtml(self.htmlMyTweets)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setEnabled(True)
+			self.ex.nextButton.setEnabled(True)
 			self.ex.backButton.setText("Tweets")
 			self.ex.nextButton.setText("Photos")
 		elif sender.text() == "Photos":
@@ -303,13 +301,15 @@ class TwitterGUI_APP():
 			self.ex.backButton.setText("My Tweets")
 			self.ex.nextButton.setText("Messages to Me")
 		elif sender.text() == "Messages to Me":
-			self.ex.dataBrowser.setHtml(htmlMessagesTM)
+			self.ex.dataBrowser.setHtml(self.htmlMessagesTM)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Photos")
 			self.ex.nextButton.setText("Messages from Me")
 		elif sender.text() == "Messages from Me":
-			self.ex.dataBrowser.setHtml(htmlMessagesFM)
+			self.ex.dataBrowser.setHtml(self.htmlMessagesFM)
 			self.ex.dataThemeLabel.setText(sender.text())
+			self.ex.backButton.setEnabled(True)
+			self.ex.nextButton.setEnabled(True)
 			self.ex.backButton.setText("Messages to Me")
 			self.ex.nextButton.setText("Following")
 		elif sender.text() == "Following":
@@ -321,7 +321,6 @@ class TwitterGUI_APP():
 			self.ex.dataBrowser.setHtml(htmlFollowers)
 			self.ex.dataThemeLabel.setText(sender.text())
 			self.ex.backButton.setText("Following")
-			self.ex.nextButton.setEnabled(True)
 			self.ex.nextButton.setText("Favourites")
 		elif sender.text() == "Favourites":
 			self.ex.dataBrowser.setHtml(htmlFavourites)

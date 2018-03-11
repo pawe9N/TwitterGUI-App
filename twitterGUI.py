@@ -6,13 +6,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
 
     	################################## Main Window ######################################################
-        self.MainWindow = MainWindow
-        self.MainWindow.setFixedSize(1140, 870)
+        MainWindow.setFixedSize(1140, 870)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("images\\twitter icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.MainWindow.setWindowIcon(icon)
+        MainWindow.setWindowIcon(icon)
 
-        mainWidget = QtWidgets.QWidget(self.MainWindow )
+        mainWidget = QtWidgets.QWidget(MainWindow )
         mainWidget.setStyleSheet("background: #243447;")
         ## ("background: qlineargradient(spread:pad, x1:1, y1:1, x2:0.988636, y2:0.08, stop:0 rgba(0, 199, 255, 137), stop:1 rgba(255, 255, 255, 255));
 
@@ -295,10 +294,10 @@ class Ui_MainWindow(object):
 
         ############################ MainWindow and data ###################################################################################
 
-        self.MainWindow.setCentralWidget(mainWidget)
-        self.retranslateUi(self.MainWindow )
-        QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
-        self.MainWindow.show()
+        MainWindow.setCentralWidget(mainWidget)
+        self.retranslateUi(MainWindow )
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.show()
 
 
     def retranslateUi(self, MainWindow):

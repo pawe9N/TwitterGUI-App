@@ -32,6 +32,8 @@ class UI_ConnectionError(object):
 
     def __del__(self):
         del self
+
+        
 """
 app = QtWidgets.QApplication(sys.argv)
 ex = UI_ConnectionError()

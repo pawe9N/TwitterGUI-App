@@ -36,32 +36,32 @@ class Twitter_Connector():
 	def post_tweet(self, tweet):
 		return self.api.PostUpdate(tweet)
 
+	def get_tweets(self):
+		return self.api.GetHomeTimeline(count=20, include_entities=False)
+
 	def get_messagesFM(self):
-		return self.api.GetSentDirectMessages()
+		return self.api.GetSentDirectMessages(include_entities=False)
 
 	def get_messagesTM(self):
-		return self.api.GetDirectMessages()
+		return self.api.GetDirectMessages(include_entities=False)
 
 	def send_message(self, text, screen_name):
 		return self.api.PostDirectMessage(text, screen_name=screen_name)
 
-	def get_tweets(self):
-		return self.api.GetHomeTimeline()
-
 	def get_favourites(self):
-		return self.api.GetFavorites()
+		return self.api.GetFavorites(include_entities=False)
 
 	def get_my_timeline(self):
-		return self.api.GetUserTimeline(screen_name = self.get_user_screen_name())
+		return self.api.GetUserTimeline(screen_name = self.get_user_screen_name(), include_rts=False, trim_user=True, exclude_replies=True)
 
 	def get_followers(self):
-		return self.api.GetFollowers(screen_name = self.get_user_screen_name())
+		return self.api.GetFollowers(screen_name = self.get_user_screen_name(), include_user_entities=False)
+
 """
 def main():
 	Tconnector = Twitter_Connector()
-	messages = Tconnector.api.GetSentDirectMessages()
-	for follower in messages:
-		print(follower, "\n")
+	Tconnector.send_message("abab", "pawe9N")
+	print(Tconnector.get_messagesTM())
 
 		
 

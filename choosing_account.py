@@ -49,6 +49,7 @@ class UI_ChoosingAccount(object):
 
     def __del__(self):
     	del self 
+        
 
 """
 app = QtWidgets.QApplication(sys.argv)
