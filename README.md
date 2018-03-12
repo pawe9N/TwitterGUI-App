@@ -39,3 +39,6 @@ After that you will can open an application with your personal twitter account.
 
 - Sending a message to users (in this example to myself) with instant switching to "Messages From Me" page
 <img src="https://i.imgur.com/DBYhRUB.gif">
+
+- What if you will not have an internet connection?
+<img src="https://i.imgur.com/yFPMNNo.gif">
