@@ -23,7 +23,6 @@ class Keys:
 After that you will can open an application with your personal twitter account.
 
 ## Little demo with Gifs
-/* in progress */
 
 - Starting the application
 <img src="https://i.imgur.com/C9catMz.gif">
