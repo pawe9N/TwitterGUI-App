@@ -7,7 +7,7 @@ If you want to use this program, you have to download all files of this reposito
 Then you should install all requirements which you can see in requirements.txt. 
 To install it you should use the following pip command in your console: 
 ```python
-pip install -r /path/to/requirements.txt).
+pip install -r /path/to/requirements.txt
 ```
 After that you have to create keys_class.py file in classes directory and input the following code with your keys there:
 
