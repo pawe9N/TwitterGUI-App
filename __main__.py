@@ -163,7 +163,7 @@ class TwitterGUI_APP():
 						html.append("<center><b>{}</b><br><br><img src='images/{}'><br>Date: {}</center> <hr>".format(text,image[39:],date))
 			else:
 				ntweets += 1
-				html.append("<center><br><b>Text: {}</b><br>Date: {} </center><hr>".format(text,date))
+				html.append("<center><b>{}</b><br>Date: {} </center><hr>".format(text,date))
 		return 	"".join(html), ntweets
 
 
@@ -234,6 +234,7 @@ class TwitterGUI_APP():
 			self.ex.tweetsNumberLabel.setText(str(self.nMyTweets))
 
 			self.ex.dataThemeLabel.setText("My Tweets")
+			self.ex.nextButton.setEnabled(True)
 			self.ex.backButton.setEnabled(True)
 			self.ex.backButton.setText("Tweets")
 			self.ex.nextButton.setText("Photos")
