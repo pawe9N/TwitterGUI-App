@@ -27,3 +27,15 @@ After that you will can open an application with your personal twitter account.
 
 - Starting the application
 <img src="https://i.imgur.com/C9catMz.gif">
+
+- Choosing my account
+<img src="https://i.imgur.com/m5gPhzF.gif">
+
+- Showing data (tweets, my tweets, photos, messages to me, messages from me, following, followers, favourites)
+<img src="https://i.imgur.com/QEjYOMk.gif">
+
+- Posting a new tweet with instant switching to "My Tweets" page
+<img src="https://i.imgur.com/mOJLGhp.gif">
+
+- Sending a message to users (in this example to myself) with instant switching to "Messages From Me" page
+<img src="https://i.imgur.com/DBYhRUB.gif">
