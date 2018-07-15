@@ -1,6 +1,9 @@
 # TwitterGUI-App
 TwitterGUI App was created for purpose of learning python, twitter API (python-twitter library) and PyQt5.
 
+## Description of application
+This app shows twitter profile in window without assistance of browser. You can watch your tweets and tweets of people you follow, add new tweets or send messages to other users.
+
 ## Getting Started
 
 If you want to use this program, you have to download all files of this repository.
